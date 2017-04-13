@@ -19,10 +19,8 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <InkToolbar TargetInkCanvas="{Binding ElementName=WritingArea}" x:Name="toolbar" />
-            <controls:InkDevicesToolbar VerticalAlignment="Top" TargetInkCanvas="{Binding ElementName=WritingArea}" />
-        </StackPanel>
+        <InkToolbar TargetInkCanvas="{Binding ElementName=WritingArea}" x:Name="toolbar" />
+        <controls:InkDevicesToolbar HorizontalAlignment="Center" VerticalAlignment="Top" TargetInkCanvas="{Binding ElementName=WritingArea}" />
 
         <Button Content="Clear" x:Name="ClearButton" Click="ClearButton_Click" Grid.Column="1" Padding="36 8" Margin="0 0 4 0" />
 

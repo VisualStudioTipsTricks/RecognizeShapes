@@ -24,9 +24,6 @@
     </UserControl.Resources>
 
     <StackPanel Orientation="Horizontal">
-        <Button x:Name="NoneButton" Click="NoneButton_Click">
-            <TextBlock Text="&#x274c;" FontFamily="Segoe UI Symbol" />
-        </Button>
         <ToggleButton x:Name="PenButton" Checked="PenButton_Checked" Unchecked="PenButton_Unchecked">
             <TextBlock Text="&#x270e;" FontFamily="Segoe UI Symbol" />
         </ToggleButton>
@@ -36,5 +33,8 @@
         <ToggleButton x:Name="TouchButton" Checked="TouchButton_Checked" Unchecked="TouchButton_Unchecked">
             <TextBlock Text="&#x270b;" FontFamily="Segoe UI Symbol" />
         </ToggleButton>
+        <Button x:Name="NoneButton" Click="NoneButton_Click">
+            <TextBlock Text="&#x274c;" FontFamily="Segoe UI Symbol" />
+        </Button>
     </StackPanel>
 </UserControl>
