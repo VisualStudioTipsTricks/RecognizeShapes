@@ -54,23 +54,6 @@ namespace RecognizeShapes.Helpers
             typeof(AutoRecognizeShapes), new PropertyMetadata(null));
         #endregion
 
-        #region InkToolbar
-        public static InkToolbar GetInkToolbar(DependencyObject obj)
-        {
-            return (InkToolbar)obj.GetValue(InkToolbarProperty);
-        }
-
-        public static void SetInkToolbar(DependencyObject obj, InkToolbar value)
-        {
-            obj.SetValue(InkToolbarProperty, value);
-        }
-
-        public static readonly DependencyProperty InkToolbarProperty =
-            DependencyProperty.RegisterAttached("InkToolbar",
-            typeof(InkToolbar),
-            typeof(AutoRecognizeShapes), new PropertyMetadata(null));
-        #endregion
-
         private static void SetupTimer(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             canvas = d as InkCanvas;
@@ -204,9 +187,9 @@ namespace RecognizeShapes.Helpers
 
             ellipse.RenderTransform = compositeTransform;
 
-            InkToolbar bar = GetInkToolbar(canvas);
-            ellipse.Stroke = new SolidColorBrush(bar.InkDrawingAttributes.Color);
-            ellipse.StrokeThickness = bar.InkDrawingAttributes.Size.Width;
+            var attributes = canvas.InkPresenter.CopyDefaultDrawingAttributes();
+            ellipse.Stroke = new SolidColorBrush(attributes.Color);
+            ellipse.StrokeThickness = attributes.Size.Width;
 
             drawingSurface.Children.Add(ellipse);
         }
@@ -220,9 +203,9 @@ namespace RecognizeShapes.Helpers
                 polygon.Points.Add(point);
             }
 
-            InkToolbar bar = GetInkToolbar(canvas);
-            polygon.Stroke = new SolidColorBrush(bar.InkDrawingAttributes.Color);
-            polygon.StrokeThickness = bar.InkDrawingAttributes.Size.Width;
+            var attributes = canvas.InkPresenter.CopyDefaultDrawingAttributes();
+            polygon.Stroke = new SolidColorBrush(attributes.Color);
+            polygon.StrokeThickness = attributes.Size.Width;
 
             drawingSurface.Children.Add(polygon);
         }

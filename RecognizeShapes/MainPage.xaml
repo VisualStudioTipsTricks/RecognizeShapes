@@ -19,30 +19,16 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <InkToolbar TargetInkCanvas="{Binding ElementName=WritingArea}" x:Name="toolbar" />
+        <InkToolbar TargetInkCanvas="{Binding ElementName=WritingArea}" />
         <controls:InkDevicesToolbar HorizontalAlignment="Center" VerticalAlignment="Top" TargetInkCanvas="{Binding ElementName=WritingArea}" />
 
         <Button Content="Clear" x:Name="ClearButton" Click="ClearButton_Click" Grid.Column="1" Padding="36 8" Margin="0 0 4 0" />
 
         <InkCanvas x:Name="WritingArea" Grid.Row="1" Grid.ColumnSpan="2"
                    hlp:AutoRecognizeShapes.Timeout="3000"
-                   hlp:AutoRecognizeShapes.InkToolbar="{Binding ElementName=toolbar}"
                    hlp:AutoRecognizeShapes.TargetCanvas="{Binding ElementName=canvas}" />
 
-        <Canvas x:Name="canvas" Grid.ColumnSpan="2">
-            <Canvas.Resources>
-                <SolidColorBrush x:Key="PolygonBrush" Color="Blue" />
-                <SolidColorBrush x:Key="EllipseBrush" Color="Green" />
-                <Style TargetType="Polygon">
-                    <Setter Property="Stroke" Value="Blue"/>
-                    <Setter Property="StrokeThickness" Value="2"/>
-                </Style>
-                <Style TargetType="Ellipse">
-                    <Setter Property="Stroke" Value="Green"/>
-                    <Setter Property="StrokeThickness" Value="2"/>
-                </Style>
-            </Canvas.Resources>
-        </Canvas>
+        <Canvas x:Name="canvas" Grid.ColumnSpan="2" />
 
     </Grid>
 </Page>
