@@ -2,7 +2,6 @@
     x:Class="RecognizeShapes.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:RecognizeShapes"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:RecognizeShapes.Controls"
@@ -22,7 +21,9 @@
         <InkToolbar TargetInkCanvas="{Binding ElementName=WritingArea}" />
         <controls:InkDevicesToolbar HorizontalAlignment="Center" VerticalAlignment="Top" TargetInkCanvas="{Binding ElementName=WritingArea}" />
 
-        <Button Content="Clear" x:Name="ClearButton" Click="ClearButton_Click" Grid.Column="1" Padding="36 8" Margin="0 0 4 0" />
+        <Button x:Name="ClearButton" Click="ClearButton_Click" Grid.Column="1" FontSize="22" Width="48" Height="48">
+            <TextBlock Text="&#xe107;" FontFamily="Segoe UI Symbol" />
+        </Button>
 
         <InkCanvas x:Name="WritingArea" Grid.Row="1" Grid.ColumnSpan="2"
                    hlp:AutoRecognizeShapes.Timeout="3000"
