@@ -56,14 +56,23 @@ namespace RecognizeShapes.Helpers
 
         private static void SetupTimer(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            canvas = d as InkCanvas;
+            bool result = Int32.TryParse(e.NewValue.ToString(), out int milliseconds);
 
-            timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds((int)e.NewValue);
-            timer.Tick += Timer_Tick;
+            if (result == true && milliseconds > 0)
+            {
+                canvas = d as InkCanvas;
 
-            canvas.InkPresenter.StrokeInput.StrokeStarted += StrokeInput_StrokeStarted;
-            canvas.InkPresenter.StrokeInput.StrokeEnded += StrokeInput_StrokeEnded;
+                timer = new DispatcherTimer();
+                timer.Interval = TimeSpan.FromMilliseconds(milliseconds);
+                timer.Tick += Timer_Tick;
+
+                canvas.InkPresenter.StrokeInput.StrokeStarted += StrokeInput_StrokeStarted;
+                canvas.InkPresenter.StrokeInput.StrokeEnded += StrokeInput_StrokeEnded;
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid value for internal timer!");
+            }
         }
 
         private static void Timer_Tick(object sender, object e)

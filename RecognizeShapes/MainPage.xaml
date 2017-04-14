@@ -26,7 +26,7 @@
         </Button>
 
         <InkCanvas x:Name="WritingArea" Grid.Row="1" Grid.ColumnSpan="2"
-                   hlp:AutoRecognizeShapes.Timeout="3000"
+                   hlp:AutoRecognizeShapes.Timeout="1000"
                    hlp:AutoRecognizeShapes.TargetCanvas="{Binding ElementName=canvas}" />
 
         <Canvas x:Name="canvas" Grid.ColumnSpan="2" />
