@@ -116,10 +116,15 @@ namespace RecognizeShapes.Helpers
             var drawingSurface = GetTargetCanvas(canvas);
             if (drawingSurface == null) return;
 
-            IReadOnlyList<IInkAnalysisNode> drawings = inkAnalyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkDrawing);
-            int count = drawings.Count;
+            IReadOnlyList<IInkAnalysisNode> nodes = inkAnalyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.WritingRegion);
+            foreach (var item in nodes)
+            {
+                AddTextToCanvas(analysisRoot, drawingSurface);
+            }
 
-            if (count > 0)
+            IReadOnlyList<IInkAnalysisNode> drawings = inkAnalyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkDrawing);
+            
+            if (drawings.Any())
             {
                 foreach (IInkAnalysisNode drawing in drawings)
                 {
@@ -155,11 +160,6 @@ namespace RecognizeShapes.Helpers
                     // inkAnalyzer.RemoveDataForStrokes(shape.GetStrokeIds());
                 }
             }
-            else
-            {
-                // The user has written something on the InkCanvas
-                AddTextToCanvas(analysisRoot, drawingSurface);
-            }
 
             // presenter.StrokeContainer.DeleteSelected();
             presenter.StrokeContainer.Clear();
@@ -167,32 +167,44 @@ namespace RecognizeShapes.Helpers
 
         private static void AddTextToCanvas(InkAnalysisRoot analysisRoot, Canvas drawingSurface)
         {
-            TextBlock tb = new TextBlock();
-            tb.Text = analysisRoot.RecognizedText;
-            tb.FontSize = analysisRoot.BoundingRect.Height;
-            tb.IsHitTestVisible = false;
+            //var rect = analysisRoot.BoundingRect;
+            //Rectangle r = new Rectangle();
+            //r.IsHitTestVisible = false;
+            //r.SetValue(Canvas.LeftProperty, rect.Left);
+            //r.SetValue(Canvas.TopProperty, rect.Top);
+            //r.SetValue(Canvas.WidthProperty, rect.Width);
+            //r.SetValue(Canvas.HeightProperty, rect.Height);
+            //r.Stroke = new SolidColorBrush(canvas.InkPresenter.CopyDefaultDrawingAttributes().Color);
+            //r.StrokeThickness = 1;
+            //drawingSurface.Children.Add(r);
 
-            //var points = analysisRoot.RotatedBoundingRect;
-            //analysisRoot.BoundingRect
             //double rotationAngle = Math.Atan2(points[2].Y - points[0].Y, points[2].X - points[0].X);
             //double rotationAngle = Math.Atan2(analysisRoot.BoundingRect.Height, analysisRoot.BoundingRect.Width);
+            //rotationAngle = -(rotationAngle * 180.0 / Math.PI);
             var attributes = canvas.InkPresenter.CopyDefaultDrawingAttributes();
-            tb.Foreground = new SolidColorBrush(attributes.Color);
 
-            var compositeTransform = new CompositeTransform();
-            //compositeTransform.Rotation = rotationAngle * 180.0 / Math.PI;
-            compositeTransform.TranslateX = analysisRoot.BoundingRect.Left;
-            compositeTransform.TranslateY = analysisRoot.BoundingRect.Top;
+            var container = new Viewbox();
+            container.RenderTransformOrigin = new Point(0.5, 0.5);
+            container.IsHitTestVisible = false;
+            container.SetValue(Canvas.LeftProperty, analysisRoot.BoundingRect.Left);
+            container.SetValue(Canvas.TopProperty, analysisRoot.BoundingRect.Top + analysisRoot.BoundingRect.Height);
+            container.Width = analysisRoot.BoundingRect.Width;
+            container.Height = analysisRoot.BoundingRect.Height;
+            //container.RenderTransform = new RotateTransform() { Angle = rotationAngle };
+            container.Child = new Border() {
+                Child = new TextBlock() {
+                    Text = analysisRoot.RecognizedText,
+                    IsHitTestVisible = false,
+                    Foreground = new SolidColorBrush(attributes.Color)
+                }
+            };
+            drawingSurface.Children.Add(container);
 
-            tb.RenderTransform = compositeTransform;
-
-            drawingSurface.Children.Add(tb);
-
-            if(RecognitionOccured != null)
+            if (RecognitionOccured != null)
             {
-                RecognitionOccured(null, new RecognitionEventArgs(tb)
+                RecognitionOccured(null, new RecognitionEventArgs(container)
                 {
-                    Description = $"Text '{tb.Text}'"
+                    Description = $"Text '{analysisRoot.RecognizedText}'"
                 } );
             }
         }

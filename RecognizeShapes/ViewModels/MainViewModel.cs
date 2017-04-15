@@ -24,6 +24,7 @@ namespace RecognizeShapes.ViewModels
             {
                 selected = value;
                 base.RaisePropertyChanged();
+                this.DeleteCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -33,9 +34,14 @@ namespace RecognizeShapes.ViewModels
         public MainViewModel()
         {
             this.ResetCommand = new RelayCommand(resetCommandExecute);
-            this.DeleteCommand = new RelayCommand(deleteCommandExecute);
+            this.DeleteCommand = new RelayCommand(deleteCommandExecute, deleteCommandCanExecute);
             this.Elements = new ObservableCollection<GraphicElement>();
             AutoRecognizeShapes.RecognitionOccured += AutoRecognizeShapes_RecognitionOccured;
+        }
+
+        private bool deleteCommandCanExecute()
+        {
+            return this.Selected != null;
         }
 
         private void deleteCommandExecute()
@@ -48,6 +54,8 @@ namespace RecognizeShapes.ViewModels
                 }
 
                 var ge = this.Elements.Remove(this.Selected);
+                this.Selected = this.Elements.FirstOrDefault();
+                this.DeleteCommand.RaiseCanExecuteChanged();
             }
         }
 
