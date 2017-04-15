@@ -6,37 +6,56 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:RecognizeShapes.Controls"
     xmlns:hlp="using:RecognizeShapes.Helpers"
+    xmlns:viewmodels="using:RecognizeShapes.ViewModels"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <viewmodels:MainViewModel x:Key="viewmodel" />
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+          DataContext="{StaticResource viewmodel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
 
-        <InkToolbar TargetInkCanvas="{Binding ElementName=WritingArea}" />
-        <controls:InkDevicesToolbar HorizontalAlignment="Center" VerticalAlignment="Top" TargetInkCanvas="{Binding ElementName=WritingArea}" />
+        <StackPanel Orientation="Horizontal">
+            <InkToolbar TargetInkCanvas="{Binding ElementName=WritingArea}" />
+            <controls:InkDevicesToolbar HorizontalAlignment="Center" TargetInkCanvas="{Binding ElementName=WritingArea}" />
+        </StackPanel>
 
-        <Button x:Name="ClearButton" Click="ClearButton_Click" Grid.Column="1" FontSize="22" Width="48" Height="48">
-            <TextBlock Text="&#xe107;" FontFamily="Segoe UI Symbol" />
-        </Button>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <ComboBox HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" ItemsSource="{x:Bind ViewModel.Elements,Mode=TwoWay}"
+                  SelectedItem="{Binding Selected,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" MinWidth="300">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:GraphicElement">
+                        <TextBlock Text="{x:Bind Description}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button FontSize="22" Width="48" Height="48" Margin="0 0 48 0" Command="{x:Bind ViewModel.DeleteCommand}"
+                    ToolTipService.ToolTip="Clear the selected drawing">
+                <TextBlock Text="&#xe107;" FontFamily="Segoe UI Symbol" />
+            </Button>
+            <Button x:Name="ClearButton" Click="ClearButton_Click" FontSize="22" Width="48" Height="48"
+                    ToolTipService.ToolTip="Clear all the drawings">
+                <TextBlock Text="&#xe107;" FontFamily="Segoe UI Symbol" />
+            </Button>
+        </StackPanel>
 
-        <InkCanvas x:Name="WritingArea" Grid.Row="1" Grid.ColumnSpan="2"
+        <InkCanvas x:Name="WritingArea" Grid.Row="1"
                    hlp:AutoRecognizeShapes.Timeout="1000"
                    hlp:AutoRecognizeShapes.TargetCanvas="{Binding ElementName=canvas}" />
 
-        <Canvas x:Name="canvas" Grid.ColumnSpan="2" />
+        <Canvas x:Name="canvas" />
 
-        <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="4" VerticalAlignment="Center" HorizontalAlignment="Left">
+        <TextBlock Grid.Row="2" Margin="4" VerticalAlignment="Center" HorizontalAlignment="Left">
                 <Run Text="Recognize Shapes" FontSize="18" />
         </TextBlock>
 
-        <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="4" VerticalAlignment="Center" HorizontalAlignment="Right">
+        <TextBlock Grid.Row="2" Margin="4" VerticalAlignment="Center" HorizontalAlignment="Right">
                 <Run Text="Igor Damiani " FontWeight="Bold" />
                 <Run Text="(@IgorDamiani)" />
                 <Run Text=" and " />

@@ -20,6 +20,8 @@ namespace RecognizeShapes.Helpers
         static InkCanvas canvas;
         static InkAnalyzer inkAnalyzer = new InkAnalyzer();
 
+        public static event EventHandler<RecognitionEventArgs> RecognitionOccured;
+
         #region Timeout property
         public static int GetTimeout(DependencyObject obj)
         {
@@ -170,16 +172,29 @@ namespace RecognizeShapes.Helpers
             tb.FontSize = analysisRoot.BoundingRect.Height;
             tb.IsHitTestVisible = false;
 
+            //var points = analysisRoot.RotatedBoundingRect;
+            //analysisRoot.BoundingRect
+            //double rotationAngle = Math.Atan2(points[2].Y - points[0].Y, points[2].X - points[0].X);
+            //double rotationAngle = Math.Atan2(analysisRoot.BoundingRect.Height, analysisRoot.BoundingRect.Width);
             var attributes = canvas.InkPresenter.CopyDefaultDrawingAttributes();
             tb.Foreground = new SolidColorBrush(attributes.Color);
 
             var compositeTransform = new CompositeTransform();
+            //compositeTransform.Rotation = rotationAngle * 180.0 / Math.PI;
             compositeTransform.TranslateX = analysisRoot.BoundingRect.Left;
             compositeTransform.TranslateY = analysisRoot.BoundingRect.Top;
 
             tb.RenderTransform = compositeTransform;
 
             drawingSurface.Children.Add(tb);
+
+            if(RecognitionOccured != null)
+            {
+                RecognitionOccured(null, new RecognitionEventArgs(tb)
+                {
+                    Description = $"Text '{tb.Text}'"
+                } );
+            }
         }
 
         private static void AddEllipseToCanvas(InkAnalysisInkDrawing shape, Canvas drawingSurface)
@@ -216,7 +231,6 @@ namespace RecognizeShapes.Helpers
                 // by which the ellipse has been rotated clockwise.
                 double rotationAngle = Math.Atan2(points[2].Y - points[0].Y, points[2].X - points[0].X);
 
-                RotateTransform rotateTransform = new RotateTransform();
                 // Convert radians to degrees.
                 compositeTransform.Rotation = rotationAngle * 180.0 / Math.PI;
                 compositeTransform.CenterX = ellipse.Width / 2.0;
@@ -233,6 +247,14 @@ namespace RecognizeShapes.Helpers
             ellipse.StrokeThickness = attributes.Size.Width;
 
             drawingSurface.Children.Add(ellipse);
+
+            if (RecognitionOccured != null)
+            {
+                RecognitionOccured(null, new RecognitionEventArgs(ellipse)
+                {
+                    Description = $"Ellipse centered at {center}"
+                });
+            }
         }
 
         private static void AddPolygonToCanvas(InkAnalysisInkDrawing shape, Canvas drawingSurface)
@@ -250,6 +272,14 @@ namespace RecognizeShapes.Helpers
             polygon.StrokeThickness = attributes.Size.Width;
 
             drawingSurface.Children.Add(polygon);
+
+            if (RecognitionOccured != null)
+            {
+                RecognitionOccured(null, new RecognitionEventArgs(polygon)
+                {
+                    Description = $"Polygon with {shape.Points.Count} sides"
+                });
+            }
         }
 
         static double Distance(Point p0, Point p1)
