@@ -102,58 +102,90 @@ namespace RecognizeShapes.Helpers
 
                 if (results.Status == InkAnalysisStatus.Updated)
                 {
-                    ConvertShapes(presenter);
+                    ConvertShapes(presenter, inkAnalyzer.AnalysisRoot);
                 }
             }
+
+            inkAnalyzer.ClearDataForAllStrokes();
         }
 
-        private static void ConvertShapes(InkPresenter presenter)
+        private static void ConvertShapes(InkPresenter presenter, InkAnalysisRoot analysisRoot)
         {
             var drawingSurface = GetTargetCanvas(canvas);
             if (drawingSurface == null) return;
 
             IReadOnlyList<IInkAnalysisNode> drawings = inkAnalyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkDrawing);
+            int count = drawings.Count;
 
-            foreach (IInkAnalysisNode drawing in drawings)
+            if (count > 0)
             {
-                var shape = (InkAnalysisInkDrawing)drawing;
-
-                if (shape.DrawingKind == InkAnalysisDrawingKind.Drawing)
+                foreach (IInkAnalysisNode drawing in drawings)
                 {
-                    // Omit unsupported shape
-                    continue;
-                }
+                    var shape = (InkAnalysisInkDrawing)drawing;
 
-                if (shape.DrawingKind == InkAnalysisDrawingKind.Circle || shape.DrawingKind == InkAnalysisDrawingKind.Ellipse)
-                {
-                    // Create a Circle or Ellipse on the canvas.
-                    AddEllipseToCanvas(shape, drawingSurface);
-                }
-                else
-                {
-                    // Create a Polygon on the canvas.
-                    AddPolygonToCanvas(shape, drawingSurface);
-                }
+                    if (shape.DrawingKind == InkAnalysisDrawingKind.Drawing)
+                    {
+                        // Omit unsupported shape
+                        continue;
+                    }
 
-                // Select the strokes that were recognized, so we can delete them.
-                // The effect is that the shape added to the canvas replaces the strokes.
-                foreach (var strokeId in shape.GetStrokeIds())
-                {
-                    InkStroke stroke = presenter.StrokeContainer.GetStrokeById(strokeId);
-                    stroke.Selected = true;
-                }
+                    if (shape.DrawingKind == InkAnalysisDrawingKind.Circle || shape.DrawingKind == InkAnalysisDrawingKind.Ellipse)
+                    {
+                        // Create a Circle or Ellipse on the canvas.
+                        AddEllipseToCanvas(shape, drawingSurface);
+                    }
+                    else
+                    {
+                        // Create a Polygon on the canvas.
+                        AddPolygonToCanvas(shape, drawingSurface);
+                    }
 
-                // Remove the recognized strokes from the analyzer
-                // so it won't re-analyze them.
-                inkAnalyzer.RemoveDataForStrokes(shape.GetStrokeIds());
+                    // Select the strokes that were recognized, so we can delete them.
+                    // The effect is that the shape added to the canvas replaces the strokes.
+                    foreach (var strokeId in shape.GetStrokeIds())
+                    {
+                        InkStroke stroke = presenter.StrokeContainer.GetStrokeById(strokeId);
+                        stroke.Selected = true;
+                    }
+
+                    // Remove the recognized strokes from the analyzer
+                    // so it won't re-analyze them.
+                    // inkAnalyzer.RemoveDataForStrokes(shape.GetStrokeIds());
+                }
+            }
+            else
+            {
+                // The user has written something on the InkCanvas
+                AddTextToCanvas(analysisRoot, drawingSurface);
             }
 
-            presenter.StrokeContainer.DeleteSelected();
+            // presenter.StrokeContainer.DeleteSelected();
+            presenter.StrokeContainer.Clear();
+        }
+
+        private static void AddTextToCanvas(InkAnalysisRoot analysisRoot, Canvas drawingSurface)
+        {
+            TextBlock tb = new TextBlock();
+            tb.Text = analysisRoot.RecognizedText;
+            tb.FontSize = analysisRoot.BoundingRect.Height;
+            tb.IsHitTestVisible = false;
+
+            var attributes = canvas.InkPresenter.CopyDefaultDrawingAttributes();
+            tb.Foreground = new SolidColorBrush(attributes.Color);
+
+            var compositeTransform = new CompositeTransform();
+            compositeTransform.TranslateX = analysisRoot.BoundingRect.Left;
+            compositeTransform.TranslateY = analysisRoot.BoundingRect.Top;
+
+            tb.RenderTransform = compositeTransform;
+
+            drawingSurface.Children.Add(tb);
         }
 
         private static void AddEllipseToCanvas(InkAnalysisInkDrawing shape, Canvas drawingSurface)
         {
             Ellipse ellipse = new Ellipse();
+            ellipse.IsHitTestVisible = false;
 
             // Ellipses and circles are reported as four points
             // in clockwise orientation.
@@ -206,6 +238,7 @@ namespace RecognizeShapes.Helpers
         private static void AddPolygonToCanvas(InkAnalysisInkDrawing shape, Canvas drawingSurface)
         {
             Polygon polygon = new Polygon();
+            polygon.IsHitTestVisible = false;
 
             foreach (var point in shape.Points)
             {

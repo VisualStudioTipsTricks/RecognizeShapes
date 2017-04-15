@@ -12,6 +12,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -30,6 +31,20 @@
                    hlp:AutoRecognizeShapes.TargetCanvas="{Binding ElementName=canvas}" />
 
         <Canvas x:Name="canvas" Grid.ColumnSpan="2" />
+
+        <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="4" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <Run Text="Recognize Shapes" FontSize="18" />
+        </TextBlock>
+
+        <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="4" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <Run Text="Igor Damiani " FontWeight="Bold" />
+                <Run Text="(@IgorDamiani)" />
+                <Run Text=" and " />
+                <Run Text="Gian Paolo Santopaolo " FontWeight="Bold" />
+                <Run Text="(@gsantopaolo)" />
+                <Run Text=" for " />
+                <Run Text="Visual Studio Tips &amp; Tricks" FontWeight="Bold" />
+        </TextBlock>
 
     </Grid>
 </Page>
