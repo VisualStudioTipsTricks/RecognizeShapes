@@ -13,8 +13,7 @@
         <viewmodels:MainViewModel x:Key="viewmodel" />
     </Page.Resources>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-          DataContext="{StaticResource viewmodel}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" DataContext="{StaticResource viewmodel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
@@ -47,7 +46,8 @@
 
         <InkCanvas x:Name="WritingArea" Grid.Row="1"
                    hlp:AutoRecognizeShapes.Timeout="1000"
-                   hlp:AutoRecognizeShapes.TargetCanvas="{Binding ElementName=canvas}" />
+                   hlp:AutoRecognizeShapes.TargetCanvas="{Binding ElementName=canvas}"
+                   hlp:AutoRecognizeShapes.Circle="{x:Bind ViewModel.CircleCommand}" />
 
         <Canvas x:Name="canvas" />
 
@@ -66,4 +66,5 @@
         </TextBlock>
 
     </Grid>
+
 </Page>

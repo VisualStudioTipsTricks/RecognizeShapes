@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.UI.Input.Inking;
@@ -55,6 +56,20 @@ namespace RecognizeShapes.Helpers
             typeof(Canvas),
             typeof(AutoRecognizeShapes), new PropertyMetadata(null));
         #endregion
+
+        public static ICommand GetCircle(DependencyObject obj)
+        {
+            return (ICommand)obj.GetValue(CircleProperty);
+        }
+
+        public static void SetCircle(DependencyObject obj, ICommand value)
+        {
+            obj.SetValue(CircleProperty, value);
+        }
+
+        public static readonly DependencyProperty CircleProperty =
+            DependencyProperty.RegisterAttached("Circle", typeof(ICommand), typeof(AutoRecognizeShapes),
+                new PropertyMetadata(null));
 
         private static void SetupTimer(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -126,6 +141,8 @@ namespace RecognizeShapes.Helpers
             
             if (drawings.Any())
             {
+                ICommand cmd = null;
+
                 foreach (IInkAnalysisNode drawing in drawings)
                 {
                     var shape = (InkAnalysisInkDrawing)drawing;
@@ -136,15 +153,79 @@ namespace RecognizeShapes.Helpers
                         continue;
                     }
 
-                    if (shape.DrawingKind == InkAnalysisDrawingKind.Circle || shape.DrawingKind == InkAnalysisDrawingKind.Ellipse)
+                    switch (shape.DrawingKind)
                     {
-                        // Create a Circle or Ellipse on the canvas.
-                        AddEllipseToCanvas(shape, drawingSurface);
-                    }
-                    else
-                    {
-                        // Create a Polygon on the canvas.
-                        AddPolygonToCanvas(shape, drawingSurface);
+                        case InkAnalysisDrawingKind.Circle:
+                            {
+                                cmd = GetCircle(canvas);
+                                AddEllipseToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.Ellipse:
+                            {
+                                AddEllipseToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.Triangle:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.IsoscelesTriangle:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.EquilateralTriangle:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.RightTriangle:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.Quadrilateral:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.Rectangle:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.Square:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.Diamond:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.Trapezoid:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.Parallelogram:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.Pentagon:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
+                        case InkAnalysisDrawingKind.Hexagon:
+                            {
+                                AddPolygonToCanvas(shape, drawingSurface);
+                                break;
+                            }
                     }
 
                     // Select the strokes that were recognized, so we can delete them.
@@ -155,9 +236,7 @@ namespace RecognizeShapes.Helpers
                         stroke.Selected = true;
                     }
 
-                    // Remove the recognized strokes from the analyzer
-                    // so it won't re-analyze them.
-                    // inkAnalyzer.RemoveDataForStrokes(shape.GetStrokeIds());
+                    cmd?.Execute(null);
                 }
             }
 

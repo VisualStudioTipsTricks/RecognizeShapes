@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Popups;
 
 namespace RecognizeShapes.ViewModels
 {
@@ -30,13 +31,21 @@ namespace RecognizeShapes.ViewModels
 
         public RelayCommand ResetCommand { get; set; }
         public RelayCommand DeleteCommand { get; set; }
+        public RelayCommand CircleCommand { get; set; }
 
         public MainViewModel()
         {
             this.ResetCommand = new RelayCommand(resetCommandExecute);
             this.DeleteCommand = new RelayCommand(deleteCommandExecute, deleteCommandCanExecute);
+            this.CircleCommand = new RelayCommand(circleCommandExecute);
             this.Elements = new ObservableCollection<GraphicElement>();
             AutoRecognizeShapes.RecognitionOccured += AutoRecognizeShapes_RecognitionOccured;
+        }
+
+        private async void circleCommandExecute()
+        {
+            MessageDialog dlg = new MessageDialog("You've drawn a circle!");
+            await dlg.ShowAsync();
         }
 
         private bool deleteCommandCanExecute()
