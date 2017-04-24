@@ -57,6 +57,7 @@ namespace RecognizeShapes.Helpers
             typeof(AutoRecognizeShapes), new PropertyMetadata(null));
         #endregion
 
+        #region Circle
         public static ICommand GetCircle(DependencyObject obj)
         {
             return (ICommand)obj.GetValue(CircleProperty);
@@ -70,6 +71,23 @@ namespace RecognizeShapes.Helpers
         public static readonly DependencyProperty CircleProperty =
             DependencyProperty.RegisterAttached("Circle", typeof(ICommand), typeof(AutoRecognizeShapes),
                 new PropertyMetadata(null));
+        #endregion
+
+        #region Square
+        public static ICommand GetSquare(DependencyObject obj)
+        {
+            return (ICommand)obj.GetValue(SquareProperty);
+        }
+
+        public static void SetSquare(DependencyObject obj, ICommand value)
+        {
+            obj.SetValue(SquareProperty, value);
+        }
+
+        public static readonly DependencyProperty SquareProperty =
+            DependencyProperty.RegisterAttached("Square", typeof(ICommand), typeof(AutoRecognizeShapes),
+                new PropertyMetadata(null));
+        #endregion
 
         private static void SetupTimer(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -198,6 +216,7 @@ namespace RecognizeShapes.Helpers
                             }
                         case InkAnalysisDrawingKind.Square:
                             {
+                                cmd = GetSquare(canvas);
                                 AddPolygonToCanvas(shape, drawingSurface);
                                 break;
                             }

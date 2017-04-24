@@ -47,7 +47,8 @@
         <InkCanvas x:Name="WritingArea" Grid.Row="1"
                    hlp:AutoRecognizeShapes.Timeout="1000"
                    hlp:AutoRecognizeShapes.TargetCanvas="{Binding ElementName=canvas}"
-                   hlp:AutoRecognizeShapes.Circle="{x:Bind ViewModel.CircleCommand}" />
+                   hlp:AutoRecognizeShapes.Circle="{x:Bind ViewModel.CircleCommand}"
+                   hlp:AutoRecognizeShapes.Square="{x:Bind ViewModel.SquareCommand}" />
 
         <Canvas x:Name="canvas" />
 
